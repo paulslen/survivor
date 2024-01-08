@@ -21,6 +21,16 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  await deploy("Allo", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
   await deploy("YourContract", {
     from: deployer,
     // Contract constructor arguments
@@ -30,6 +40,46 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     // automatically mining the contract deployment transaction. There is no effect on live networks.
     autoMine: true,
   });
+
+  await deploy("SurvivorStrategy", {
+    from: deployer,
+    // Contract constructor arguments
+    args: ['0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9', "First Deploy"],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  await deploy("Registry", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  await deploy("AllocatorNFT", {
+    from: deployer,
+    // Contract constructor arguments
+    // args: []
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  // await deploy("BaseStrategy", {
+  //   from: deployer,
+  //   // Contract constructor arguments
+  //   args: ['0x5FbDB2315678afecb367f032d93F642f64180aa3', "First Deploy"],
+  //   log: true,
+  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
+  //   autoMine: true,
+  // });
 
   // Get the deployed contract
   // const yourContract = await hre.ethers.getContract("YourContract", deployer);

@@ -6,6 +6,22 @@ import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 
 const Home: NextPage = () => {
+
+  // Initialize data for the SurvivorStrategy initialize function
+  // const initializeData = {
+  //     nft: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+  //     maxRecipientsAllowed: 10,
+  //     roundStartTime: Math.floor(Date.now() / 1000),
+  //     roundDuration: 1704740052,
+  //     roundReward: 1000000000000000000,
+  // };
+
+  // const abiCoder = new ethers.utils.AbiCoder();
+  // const data = abiCoder.encode(
+  //     ['address', 'uint256', 'uint64', 'uint64', 'uint256'],
+  //     Object.values(initializeData)
+  // );
+
   return (
     <>
       <MetaHeader />
