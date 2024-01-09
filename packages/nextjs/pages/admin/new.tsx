@@ -2,7 +2,7 @@
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { useState } from "react";
-import "react-datepicker/dist/react-datepicker.css";
+
 
 const Home: NextPage = () => {
 

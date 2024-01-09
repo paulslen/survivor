@@ -1,6 +1,7 @@
 //import Link from "next/link";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
+import PlayerRow  from "./playerRow";
 
 const Home: NextPage = () => {
   return (
@@ -90,104 +91,12 @@ const Home: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>2</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>3</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>4</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>5</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      disabled="true"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>6</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      disabled="true"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
+                <PlayerRow id={1} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={true} />
+                <PlayerRow id={2} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={true} />
+                <PlayerRow id={3} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={true} />
+                <PlayerRow id={4} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={true} />
+                <PlayerRow id={5} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={false} />
+                <PlayerRow id={6} name="Judge Judy" address="0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded" active={true} />
               </tbody>
             </table>
           </div>
