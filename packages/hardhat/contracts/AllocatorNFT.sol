@@ -11,8 +11,8 @@ contract AllocatorNFT is ERC721, Ownable {
         tokenCounter = 0;
     }
 
-    function mintNFT() public {
-        _safeMint(msg.sender, tokenCounter);
+    function mintNFT(address _recipient) public {
+        _safeMint(_recipient, tokenCounter);
         tokenCounter++;
     }
 }

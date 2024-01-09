@@ -21,6 +21,16 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
+  await deploy("ContractFactory", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
   await deploy("Allo", {
     from: deployer,
     // Contract constructor arguments
@@ -44,7 +54,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   await deploy("SurvivorStrategy", {
     from: deployer,
     // Contract constructor arguments
-    args: ['0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9', "First Deploy"],
+    args: ['0x5FbDB2315678afecb367f032d93F642f64180aa3', "NewSurvivorStrategy"],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -55,6 +65,16 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     from: deployer,
     // Contract constructor arguments
     args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  await deploy("Anchor", {
+    from: deployer,
+    // Contract constructor arguments
+    args: ['0xf53734bb1c0f9f1a186fac4ba6871928deabed38a7185ef6f60014385d6a94eb','0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'],
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
