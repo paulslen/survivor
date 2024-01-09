@@ -21,6 +21,8 @@ interface Player {
   eliminated: number;
   name: string;
   address: string;
+  totalVotes: number;
+  totalEarned: number;
   active: boolean;
 }
 
@@ -43,6 +45,8 @@ const Home: NextPage = () => {
     eliminated: 1,
     name: "",
     address: "",
+    totalVotes: 0,
+    totalEarned: 0,
     active: false,
   });
 
@@ -108,13 +112,15 @@ const Home: NextPage = () => {
       eliminated: nextId,
       name: newPlayer.name,
       address: newPlayer.address,
+      totalVotes: newPlayer.totalVotes,
+      totalEarned: newPlayer.totalEarned,
       active: newPlayer.active,
     });
 
     console.log("Saving new player:", newPlayer);
     setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
     console.log("Players after save:", players);
-    setNewPlayer({ eliminated: nextId, name: "", address: "", active: false });
+    setNewPlayer({ eliminated: nextId, name: "", address: "", totalVotes: 0, totalEarned: 0, active: false });
     console.log("New player state after save:", newPlayer);
 
   };
@@ -243,12 +249,14 @@ const Home: NextPage = () => {
                   <th>Eliminated</th>
                   <th>Name</th>
                   <th>Address</th>
+                  <th>Total Votes</th>
+                  <th>Total Earned</th>
                   <th>Active</th>
                 </tr>
               </thead>
               <tbody>
               { [...Array(playersCount).keys()].map((playerIndex) => (
-                    <AllocatorRow id={playerIndex} />
+                    <PlayerRow id={playerIndex} />
                    ))}
 
                 <tr>
