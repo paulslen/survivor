@@ -1,127 +1,8 @@
 import Link from "next/link";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
-import AllocatorRow from "./allocatorRow"
-import PlayerRow from "./playerRow";
-import { useState } from "react";
-
-import { useEffect } from 'react';
-
-
-
-
-interface Allocator {
-  id: number;
-  name: string;
-  address: string;
-  active: boolean;
-}
-
-interface Player {
-  eliminated: number;
-  name: string;
-  address: string;
-  active: boolean;
-}
-
-
 
 const Home: NextPage = () => {
-
-  const [allocators, setAllocators] = useState<Allocator[]>([]);
-  const [allocatorsCount, setAllocatorsCount] = useState(0);
-  const [playersCount, setPlayersCount] = useState(0);
-  const [newAllocator, setNewAllocator] = useState<Allocator>({
-    id: 1,
-    name: "",
-    address: "",
-    active: false,
-  });
-
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [newPlayer, setNewPlayer] = useState<Player>({
-    eliminated: 1,
-    name: "",
-    address: "",
-    active: false,
-  });
-
-
-  const getNextAllocatorId = () => {
-    // Find the maximum id in the existing allocators and add 1
-    const maxId = Math.max(...allocators.map((allocator) => allocator.id), 1);
-    return maxId === 0 ? 1 : maxId + 1;
-  };
-
-  const getNextPlayerId = () => {
-    // Find the maximum id in the existing allocators and add 1
-    const maxId = Math.max(...players.map((player) => player.eliminated), 1);
-    return maxId === 0 ? 1 : maxId + 1;
-  };
-
-
-
-  // Watched data from the smart contract
-  const contractAllocators = 3;
-  const contractPlayers = 3;
-
-  useEffect(() => {
-
-    // Update allocators with data from the smart contract
-    setAllocatorsCount(contractAllocators);
-  }, [contractAllocators]);
-
-  useEffect(() => {
-
-    // Update players with data from the smart contract
-    setPlayersCount(contractPlayers);
-  }, [contractPlayers]);
-
-
-  const handleSaveAllocator = async () => {
-    const nextId = getNextAllocatorId();
-    console.log("Next Allocator Id:", nextId);
-
-    
-
-    // Update the local state with the new allocator
-    setAllocators((prevAllocators) => [
-      ...prevAllocators,
-      {
-        id: nextId,
-        name: newAllocator.name,
-        address: newAllocator.address,
-        active: newAllocator.active,
-      },
-    ]);
-
-    // Clear the newAllocator state
-    setNewAllocator({ id: nextId, name: "", address: "", active: false });
-  };
-
-
-  const handleSavePlayer = () => {
-    const nextId = getNextPlayerId();
-    console.log("Next Player Id:", nextId);
-
-    setNewPlayer({
-      eliminated: nextId,
-      name: newPlayer.name,
-      address: newPlayer.address,
-      active: newPlayer.active,
-    });
-
-    console.log("Saving new player:", newPlayer);
-    setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
-    console.log("Players after save:", players);
-    setNewPlayer({ eliminated: nextId, name: "", address: "", active: false });
-    console.log("New player state after save:", newPlayer);
-
-  };
-
-
-
-
   return (
     <>
       <MetaHeader />
@@ -183,9 +64,9 @@ const Home: NextPage = () => {
             </div>
           </div>
 
-          {/* Allocators List */}
+          {/* Judge List */}
           <div className="overflow-x-auto pt-6">
-            <h1 className="font-black text-xl">Allocators</h1>
+            <h1 className="font-black text-xl">Judges</h1>
             <table className="table">
               {/* head */}
               <thead>
@@ -197,36 +78,34 @@ const Home: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-                  { [...Array(allocatorsCount).keys()].map((allocatorIndex) => (
-                    <AllocatorRow id={allocatorIndex} />
-                   ))}
+                {/* row 1 */}
+                <tr>
+                  <th>1</th>
+                  <td>Judge Judy</td>
+                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
+                  <td>
+                    <input type="checkbox" checked="checked" className="checkbox" />
+                  </td>
+                </tr>
+                {/* row 2 */}
+                <tr>
+                  <th>2</th>
+                  <td>Judge Judy</td>
+                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
+                  <td>
+                    <input type="checkbox" checked="" className="checkbox" />
+                  </td>
+                </tr>
                 <tr>
                   <th>New</th>
                   <td>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      className="input input-bordered w-full max-w-xs"
-                      value={newAllocator.name}
-                      onChange={(e) =>
-                        setNewAllocator({ ...newAllocator, name: e.target.value })
-                      }
-                    />
+                    <input type="text" placeholder="Name" className="input input-bordered w-full max-w-xs" />
                   </td>
                   <td>
-                    <input
-                      type="text"
-                      placeholder="Address"
-                      className="input input-bordered w-full max-w"
-                      onChange={(e) =>
-                        setNewAllocator({ ...newAllocator, address: e.target.value })
-                      }
-                    />
+                    <input type="text" placeholder="Address" className="input input-bordered w-full max-w" />
                   </td>
                   <td>
-                    <button className="btn btn-primary" onClick={handleSaveAllocator}>
-                      Save
-                    </button>
+                    <button className="btn btn-primary">Save</button>
                   </td>
                 </tr>
               </tbody>
@@ -247,37 +126,34 @@ const Home: NextPage = () => {
                 </tr>
               </thead>
               <tbody>
-              { [...Array(playersCount).keys()].map((playerIndex) => (
-                    <AllocatorRow id={playerIndex} />
-                   ))}
-
+                {/* row 1 */}
+                <tr>
+                  <th>1</th>
+                  <td>Judge Judy</td>
+                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
+                  <td>
+                    <input type="checkbox" checked="checked" className="checkbox" />
+                  </td>
+                </tr>
+                {/* row 2 */}
+                <tr>
+                  <th>2</th>
+                  <td>Judge Judy</td>
+                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
+                  <td>
+                    <input type="checkbox" checked="" className="checkbox" />
+                  </td>
+                </tr>
                 <tr>
                   <th>New</th>
                   <td>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      className="input input-bordered w-full max-w-xs"
-                      value={newPlayer.name}
-                      onChange={(e) =>
-                        setNewPlayer({ ...newPlayer, name: e.target.value })
-                      }
-                    />
+                    <input type="text" placeholder="Name" className="input input-bordered w-full max-w-xs" />
                   </td>
                   <td>
-                    <input
-                      type="text"
-                      placeholder="Address"
-                      className="input input-bordered w-full max-w"
-                      onChange={(e) =>
-                        setNewPlayer({ ...newPlayer, address: e.target.value })
-                      }
-                    />
+                    <input type="text" placeholder="Address" className="input input-bordered w-full max-w" />
                   </td>
                   <td>
-                    <button className="btn btn-primary" onClick={handleSavePlayer}>
-                      Save
-                    </button>
+                    <button className="btn btn-primary">Save</button>
                   </td>
                 </tr>
               </tbody>
