@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { NextPage } from "next";
 //import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { encodeAbiParameters } from 'viem'
 
 const Home: NextPage = () => {
 
@@ -16,11 +17,19 @@ const Home: NextPage = () => {
   //     roundReward: 1000000000000000000,
   // };
 
-  // const abiCoder = new ethers.utils.AbiCoder();
+  const encodedData = encodeAbiParameters(
+    [
+      { name: 'x', type: 'string' },
+      { name: 'y', type: 'uint' },
+      { name: 'z', type: 'bool' }
+    ],
+    ['wagmi', 420n, true]
+  )
   // const data = abiCoder.encode(
   //     ['address', 'uint256', 'uint64', 'uint64', 'uint256'],
   //     Object.values(initializeData)
   // );
+  console.log(encodedData);
 
   return (
     <>
