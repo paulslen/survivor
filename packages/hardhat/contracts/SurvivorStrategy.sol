@@ -241,9 +241,9 @@ contract SurvivorStrategy is BaseStrategy {
     /// @notice Checks if the allocation is active
     /// @dev Reverts if the allocation is not active
     function _checkOnlyActiveAllocation() internal view {
-        if (roundStartTime > block.timestamp || block.timestamp > roundStartTime + roundDuration) {
-            revert ALLOCATION_NOT_ACTIVE();
-        }
+        // if (roundStartTime > block.timestamp || block.timestamp > roundStartTime + roundDuration) {
+        //     revert ALLOCATION_NOT_ACTIVE();
+        // }
     }
 
     /// @notice Checks if the allocation has ended

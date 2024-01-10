@@ -71,6 +71,10 @@ contract YourContract {
 		emit GreetingChange(msg.sender, _newGreeting, msg.value > 0, 0);
 	}
 
+	function getBlockTime() public view returns(uint256) {
+		return block.timestamp;
+	}
+
 	/**
 	 * Function that allows the owner to withdraw all the Ether in the contract
 	 * The function can only be called by the owner of the contract as defined by the isOwner modifier
