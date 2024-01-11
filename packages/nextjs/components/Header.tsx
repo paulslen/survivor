@@ -29,6 +29,10 @@ export const menuLinks: HeaderMenuLink[] = [
     label: "Admin",
     href: "/admin",
   },
+  {
+    label: "Initialize",
+    href: "/initialize",
+  },
 ];
 
 export const HeaderMenuLinks = () => {

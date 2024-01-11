@@ -1,4 +1,5 @@
 // import Link from "next/link";
+import { useState } from "react";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import {
@@ -11,10 +12,19 @@ import {
 } from "~~/hooks/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { useAccount } from "wagmi";
+import { encodeAbiParameters, parseAbiParameters } from 'viem'
+import { parseEther } from "viem";
 
 const Home: NextPage = () => {
 
+  const [recipientAddress, setRecipientAddress] = useState("0x0000000000000000000000000000000000000000");
+  const [status, setStatus] = useState(0);
+  const [metadata, setMetadata] = useState("");
+  const [recipientData, setRecipientData] = useState("0x0000000000000000000000000000000000000000");
+
+
   const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
+  const { data: registryData } = useDeployedContractInfo("Registry");
   const { data: poolId } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolId",
@@ -41,25 +51,38 @@ const Home: NextPage = () => {
   });
   const { data: getActiveRecipient } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
-    functionName: "roundDuration",
-  });
-
-  // Create an array to hold the recipient data
-const recipients = [];
-
-const recipientCount = Number(getActiveRecipientCount);
-
-// Fetch the data for each recipient
-for (let i = 0; i < recipientCount; i++) {
-  const { data: recipient } = useScaffoldContractRead({
-    contractName: "SurvivorStrategy",
     functionName: "getActiveRecipient",
-    args: [BigInt(i)], // Pass the index as an argument
+    args:[BigInt(recipientId)],
+  });
+  const { data: getPoolAmount } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getPoolAmount",
   });
 
-  // Add the recipient data to the array
-  recipients.push(recipient);
-}
+  const handleEncode = () => {
+    const encodedRecipientData = encodeAbiParameters(
+      parseAbiParameters('address a, address b, uint256 c'),
+      [recipientAddress, recipientAddress, BigInt(status)]
+      // ['address', 'address', 'uint', ['uint', 'string']]
+      // 
+    )
+    console.log(encodedRecipientData);
+    setRecipientData(encodedRecipientData + "000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d54657374204d6574616461746100000000000000000000000000000000000000");
+  }
+    ///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000000000000000002
+    ///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb9226600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000a74657374737472696e6700000000000000000000000000000000000000000000
+    ///0x0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d54657374204d6574616461746100000000000000000000000000000000000000
+
+  const { writeAsync: registerRecipient, isLoading: loadingRegistration } = useScaffoldContractWrite({
+    contractName: "Allo",
+    functionName: "registerRecipient",
+    args: [ BigInt(1), recipientData],
+      value: parseEther("0.1"),
+    blockConfirmations: 1,
+    onBlockConfirmation: txnReceipt => {
+      console.log("Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
 
   let num1 = Number("" + roundStartTime);
   let num2 = Number("" + roundDuration);
@@ -127,18 +150,18 @@ for (let i = 0; i < recipientCount; i++) {
             </div>
             <div className="stat place-items-center">
               <div className="stat-title">Dispensed Rewards</div>
-              <div className="stat-value text-2xl">800 USDC</div>
+              <div className="stat-value text-2xl">{currentRound?.toString()}</div>
             </div>
             <div className="stat place-items-center">
               <div className="stat-title">Remaining Funds</div>
-              <div className="stat-value text-2xl">800 USDC</div>
-              <div className="stat-desc">(50%)</div>
+              <div className="stat-value text-2xl">{getPoolAmount?.toString()}</div>
+              <div className="stat-desc">(-%)</div>
             </div>
           </div>
 
           {/* Judge List */}
           <div className="overflow-x-auto pt-6">
-            <h1 className="font-black text-xl">Judges</h1>
+            <h1 className="font-black text-xl">Allocators</h1>
             <table className="table">
               {/* head */}
               <thead>
@@ -150,24 +173,6 @@ for (let i = 0; i < recipientCount; i++) {
                 </tr>
               </thead>
               <tbody>
-                {/* row 1 */}
-                <tr>
-                  <th>1</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                </tr>
-                {/* row 2 */}
-                <tr>
-                  <th>2</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="" className="checkbox" />
-                  </td>
-                </tr>
                 <tr>
                   <th>New</th>
                   <td>
@@ -191,26 +196,43 @@ for (let i = 0; i < recipientCount; i++) {
               {/* head */}
               <thead>
                 <tr>
-                  <th>Eliminated</th>
-                  <th>Name</th>
+                  <th></th>
                   <th>Address</th>
-                  <th>Active</th>
+                  <th>Status</th>
+                  <th>Metadata</th>
                 </tr>
               </thead>
               <tbody>
-              {recipients.map((recipient, index) => (
-                <tr key={index}>
-                  <th>{index + 1}</th>
-                  <td>{recipient.metadata}</td>
-                  <td>{recipient.recipientAddress}</td>
-                  <td>
-                    <input type="checkbox" checked={recipient.recipientStatus} className="checkbox" />
-                  </td>
-                  <td>{recipient.totalVotesReceived}</td>
-                  <td>{recipient.earned}</td>
+                <tr>
+                  <th></th>
+                  <td>{getActiveRecipient?.recipientAddress.toString()}</td>
+                  <td>{getActiveRecipient?.recipientStatus.toString()}</td>
+                  <td>{getActiveRecipient?.metadata.pointer.toString()}</td>
+                  <td>{getActiveRecipient?.totalVotesReceived.toString()}</td>
                 </tr>
-              ))}
-              {/* ... (other rows) */}
+                <tr>
+                  <th></th>
+                  <td>{getActiveRecipient?.recipientAddress.toString()}</td>
+                  <td>{getActiveRecipient?.recipientStatus.toString()}</td>
+                  <td>{getActiveRecipient?.metadata.pointer.toString()}</td>
+                  <td>{getActiveRecipient?.totalVotesReceived.toString()}</td>
+                </tr>
+              <tr>
+                <th>New</th>
+                <td>
+                  <input type="text" placeholder="Recipient Address" className="input input-bordered w-full max-w-xs" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
+                </td>
+                <td>
+                  <input type="number" placeholder="Status" className="input input-bordered w-full max-w-xs" value={status} onChange={(e) => setStatus(Number(e.target.value))} />
+                </td>
+                <td>
+                  <input type="text" placeholder="Metadata" className="input input-bordered w-full max-w-xs" value={metadata} onChange={(e) => setMetadata(e.target.value)} />
+                </td>
+                <td className="flex flex-row">
+                  <button className="btn btn-primary" onClick={handleEncode}>Encode</button>
+                  <button className="btn btn-primary" onClick={registerRecipient}>Save</button>
+                </td>
+              </tr>
             </tbody>
             </table>
           </div>

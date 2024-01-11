@@ -1,13 +1,91 @@
 //import Link from "next/link";
 import type { NextPage } from "next";
+import { useState } from "react";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { parseEther } from "viem";
+import {
+  useAnimationConfig,
+  useScaffoldContract,
+  useScaffoldContractRead,
+  useScaffoldEventHistory,
+  useScaffoldEventSubscriber,
+  useDeployedContractInfo,
+} from "~~/hooks/scaffold-eth";
+import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { encodeAbiParameters, parseAbiParameters } from 'viem'
 
 const Home: NextPage = () => {
+
+  const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
+  const { data: registryData } = useDeployedContractInfo("Registry");
+  const { data: poolId } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getPoolId",
+  });
+  const { data: currentRound } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "roundNumber",
+  });
+  const { data: totalRounds } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "maxRecipientsAllowed",
+  });
+  const { data: roundStartTime } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "roundStartTime",
+  });
+  const { data: roundDuration } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "roundDuration",
+  });
+  const { data: getActiveRecipientCount } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getActiveRecipientCount",
+  });
+  const { data: getActiveRecipient } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getActiveRecipient",
+    args:[BigInt(0)],
+  });
+  const { data: getPoolAmount } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getPoolAmount",
+  });
+
+  let num1 = Number("" + roundStartTime);
+  let num2 = Number("" + roundDuration);
+  let roundExpiration = num1 + num2;
+
+  // Convert BigInt to Number for the Date constructor
+  let roundExpirationNumber = Number(roundExpiration);
+
+  // Create a Date object and format it
+  let expirationDate = new Date(roundExpirationNumber * 1000);
+  let expirationDateString = expirationDate.toUTCString();
+
+  const [recipientAddress, setRecipientAddress] = useState("0x0000000000000000000000000000000000000000");
+  const encodedData = encodeAbiParameters(
+    parseAbiParameters('address a, uint256 b'),
+    [recipientAddress, BigInt(0)]
+  )
+  console.log(encodedData);
+
+  const { writeAsync: allocate, isLoading: loadingAllocate } = useScaffoldContractWrite({
+    contractName: "Allo",
+    functionName: "allocate",
+    args: [ BigInt(1), encodedData],
+    value: parseEther("0.001"),
+    blockConfirmations: 1,
+    onBlockConfirmation: txnReceipt => {
+      console.log("Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+
   return (
     <>
       <MetaHeader />
       <div className="flex flex-row flex-grow pt-10 mx-auto">
-        {/* Project Menu List */}
+        {/* Project Menu List 
         <div className="px-5 w-1/4">
           <ul className="menu bg-base-200 w-56 rounded-box">
             <li className="menu-title">Your Votes</li>
@@ -27,18 +105,18 @@ const Home: NextPage = () => {
               </a>
             </li>
           </ul>
-        </div>
+        </div>*/}
 
         {/* Project Data */}
         <div className="flex flex-col px-5 w-full">
           {/* Header */}
           <div className="flex flex-row justify-between">
-            <h1 className="text-2xl font-black">Project Name</h1>
+            <h1 className="text-2xl font-black">Pool Id {poolId?.toString()}</h1>
             <h3 className="text-md pt-2 pl-4">
-              <span className="text-slate-400">0x40Ac73fEB67e9d50087cce1FB739B92c99B2fF0E</span>
+              <span className="text-slate-400">Address {survivorData?.address}</span>
             </h3>
             <h1 className="text-2xl font-black">
-              Round <span className="bg-color-zinc-400"></span>4/8
+              Round <span className="bg-color-zinc-400"></span>{currentRound?.toString()}/{totalRounds?.toString()}
             </h1>
           </div>
 
@@ -46,17 +124,17 @@ const Home: NextPage = () => {
           <div className="stats shadow pt-6">
             <div className="stat place-items-center">
               <div className="stat-title">Round Deadline</div>
-              <div className="stat-value text-2xl">Jan 12, 2024</div>
+              <div className="stat-value text-2xl">{expirationDateString}</div>
               <div className="stat-desc">18:30:00 UTC</div>
             </div>
             <div className="stat place-items-center">
               <div className="stat-title">Dispensed Rewards</div>
-              <div className="stat-value text-2xl">800 USDC</div>
+              <div className="stat-value text-2xl">{currentRound?.toString()}</div>
             </div>
             <div className="stat place-items-center">
               <div className="stat-title">Remaining Funds</div>
-              <div className="stat-value text-2xl">800 USDC</div>
-              <div className="stat-desc">(50%)</div>
+              <div className="stat-value text-2xl">{getPoolAmount?.toString()}</div>
+              <div className="stat-desc">(-%)</div>
             </div>
           </div>
 
@@ -68,7 +146,7 @@ const Home: NextPage = () => {
               <div className="modal-action">
                 <form method="dialog">
                   {/* if there is a button in form, it will close the modal */}
-                  <button className="btn btn-primary">Confirm</button>
+                  <button className="btn btn-primary" onClick={allocate}>Confirm</button>
                   <button className="btn">Cancel</button>
                 </form>
               </div>
@@ -100,7 +178,10 @@ const Home: NextPage = () => {
                   <td>
                     <button
                       className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
+                      onClick={() => {
+                        document.getElementById("my_modal_5").showModal();
+                        setRecipientAddress("0x0921cA5C07Dc02147c6178dC1FAE9BD2F3eb053a");
+                      }}
                     >
                       Vote
                     </button>
