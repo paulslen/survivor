@@ -381,7 +381,7 @@ contract SurvivorStrategy is BaseStrategy {
         return recipientId;
     }
 
-    /// @notice Set the round start time and duration
+    /// @notice Set the round start time and the duration 
     /// @param _roundStartTime The round start timestamp
     /// @param _roundDuration The duration of the round
     /// @param _roundReward The reward for the round
