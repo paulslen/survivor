@@ -1,6 +1,6 @@
 //import Link from "next/link";
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { parseEther } from "viem";
 import {
@@ -18,6 +18,12 @@ const Home: NextPage = () => {
 
   const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
   const { data: registryData } = useDeployedContractInfo("Registry");
+  const [recIndex, setRecIndex] = useState(0);
+  const [recipientCount, setRecipientCount] = useState(0);
+  const [recipients, setRecipients] = useState([]);
+  const [nftId, setNftId] = useState(0);
+  const [currentPoolId, setCurrentPoolId] = useState(2);
+
   const { data: poolId } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolId",
@@ -42,11 +48,20 @@ const Home: NextPage = () => {
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipientCount",
   });
-  const { data: getActiveRecipient } = useScaffoldContractRead({
+  const { data: recipient } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipient",
-    args:[BigInt(0)],
+    args: [BigInt(recIndex)],
   });
+
+  useEffect(() => {
+    if (recipient) {
+      setRecipients((prevRecipients) => [...prevRecipients, recipient]);
+      setRecIndex((prevIndex) => prevIndex + 1);
+    }
+  }, [recipient]);
+
+
   const { data: getPoolAmount } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolAmount",
@@ -66,14 +81,14 @@ const Home: NextPage = () => {
   const [recipientAddress, setRecipientAddress] = useState("0x0000000000000000000000000000000000000000");
   const encodedData = encodeAbiParameters(
     parseAbiParameters('address a, uint256 b'),
-    [recipientAddress, BigInt(0)]
+    [recipientAddress, BigInt(nftId)]
   )
   console.log(encodedData);
 
   const { writeAsync: allocate, isLoading: loadingAllocate } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "allocate",
-    args: [ BigInt(1), encodedData],
+    args: [ BigInt(currentPoolId), encodedData],
     value: parseEther("0.001"),
     blockConfirmations: 1,
     onBlockConfirmation: txnReceipt => {
@@ -142,7 +157,7 @@ const Home: NextPage = () => {
           <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
             <div className="modal-box">
               <h3 className="font-bold text-lg">Please Confirm</h3>
-              <p className="py-4">Are you sure you want to vote for -player name and address-</p>
+              <p className="py-4">Are you sure you want to vote for {recipientAddress}</p>
               <div className="modal-action">
                 <form method="dialog">
                   {/* if there is a button in form, it will close the modal */}
@@ -160,117 +175,41 @@ const Home: NextPage = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th>id</th>
-                  <th>Name</th>
+                  <th>Votes</th>
+                  <th>Metadata</th>
                   <th>Address</th>
-                  <th>Active</th>
-                  <th></th>
+                  <th>Status</th>
+                  <th>Enter your NFT ID</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th>1</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        document.getElementById("my_modal_5").showModal();
-                        setRecipientAddress("0x0921cA5C07Dc02147c6178dC1FAE9BD2F3eb053a");
-                      }}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>2</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>3</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>4</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="checked" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>5</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      disabled="true"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <th>6</th>
-                  <td>Judge Judy</td>
-                  <td>0x8aa01576787c820483620e4e1829cb51cdc145fda52ba40b9a1244cd138c7ded</td>
-                  <td>
-                    <input type="checkbox" checked="" className="checkbox" />
-                  </td>
-                  <td>
-                    <button
-                      className="btn btn-primary"
-                      disabled="true"
-                      onClick={() => document.getElementById("my_modal_5").showModal()}
-                    >
-                      Vote
-                    </button>
-                  </td>
-                </tr>
+
+              {recipients.map((recipient, index) => (
+                  <tr key={index}>
+                    <td>{recipient?.totalVotesReceived.toString()}</td>
+                    <td>{recipient?.metadata.pointer.toString()}</td>
+                    <td>{recipient?.recipientAddress.toString()}</td>
+                    <td>{recipient?.recipientStatus.toString()}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
+            <div className="flex flex-col">
+              <div>Address
+                <input type="text" placeholder="Recipient Address" className="input input-bordered w-lg" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
+              </div>
+              <div>Your NFT Id
+                <input type="number" placeholder="Your NFT ID" className="input input-bordered w-xs max-w-xs" value={nftId} onChange={(e) => setNftId(Number(e.target.value))} />
+              </div>
+              <button
+                className="btn btn-primary max-w-xs"
+                onClick={() => {
+                  document.getElementById("my_modal_5").showModal();
+                }}
+              >
+                Vote
+              </button>
+            </div>
           </div>
         </div>
       </div>

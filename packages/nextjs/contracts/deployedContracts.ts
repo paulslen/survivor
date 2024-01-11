@@ -4622,7 +4622,7 @@ const deployedContracts = {
       },
     },
     SurvivorStrategy: {
-      address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+      address: "0x1613beB3B2C4f22Ee086B2b38C1476A3cE7f78E8",
       abi: [
         {
           inputs: [

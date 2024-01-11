@@ -1,5 +1,5 @@
 // import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import {
@@ -21,10 +21,14 @@ const Home: NextPage = () => {
   const [status, setStatus] = useState(0);
   const [metadata, setMetadata] = useState("");
   const [recipientData, setRecipientData] = useState("0x0000000000000000000000000000000000000000");
+  const [recIndex, setRecIndex] = useState(0);
+  const [recipientCount, setRecipientCount] = useState(0);
+  const [recipients, setRecipients] = useState([]);
 
 
   const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
   const { data: registryData } = useDeployedContractInfo("Registry");
+  const { data: nftData } = useDeployedContractInfo("AllocatorNFT");
   const { data: poolId } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolId",
@@ -49,11 +53,19 @@ const Home: NextPage = () => {
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipientCount",
   });
-  const { data: getActiveRecipient } = useScaffoldContractRead({
+  const { data: recipient } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipient",
-    args:[BigInt(recipientId)],
+    args: [BigInt(recIndex)],
   });
+
+  useEffect(() => {
+    if (recipient) {
+      setRecipients((prevRecipients) => [...prevRecipients, recipient]);
+      setRecIndex((prevIndex) => prevIndex + 1);
+    }
+  }, [recipient]);
+  
   const { data: getPoolAmount } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolAmount",
@@ -76,7 +88,7 @@ const Home: NextPage = () => {
   const { writeAsync: registerRecipient, isLoading: loadingRegistration } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "registerRecipient",
-    args: [ BigInt(1), recipientData],
+    args: [ BigInt(poolId?.toString()), recipientData],
       value: parseEther("0.1"),
     blockConfirmations: 1,
     onBlockConfirmation: txnReceipt => {
@@ -94,8 +106,6 @@ const Home: NextPage = () => {
   // Create a Date object and format it
   let expirationDate = new Date(roundExpirationNumber * 1000);
   let expirationDateString = expirationDate.toUTCString();
-
-
 
   return (
     <>
@@ -196,27 +206,22 @@ const Home: NextPage = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th></th>
+                  <th>Votes</th>
                   <th>Address</th>
                   <th>Status</th>
                   <th>Metadata</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th></th>
-                  <td>{getActiveRecipient?.recipientAddress.toString()}</td>
-                  <td>{getActiveRecipient?.recipientStatus.toString()}</td>
-                  <td>{getActiveRecipient?.metadata.pointer.toString()}</td>
-                  <td>{getActiveRecipient?.totalVotesReceived.toString()}</td>
-                </tr>
-                <tr>
-                  <th></th>
-                  <td>{getActiveRecipient?.recipientAddress.toString()}</td>
-                  <td>{getActiveRecipient?.recipientStatus.toString()}</td>
-                  <td>{getActiveRecipient?.metadata.pointer.toString()}</td>
-                  <td>{getActiveRecipient?.totalVotesReceived.toString()}</td>
-                </tr>
+                {recipients.map((recipient, index) => (
+                  <tr key={index}>
+                    <td>{recipient?.totalVotesReceived.toString()}</td>
+                    <td>{recipient?.recipientAddress.toString()}</td>
+                    <td>{recipient?.recipientStatus.toString()}</td>
+                    <td>{recipient?.metadata.pointer.toString()}</td>
+                  </tr>
+                ))}
+
               <tr>
                 <th>New</th>
                 <td>
@@ -225,9 +230,9 @@ const Home: NextPage = () => {
                 <td>
                   <input type="number" placeholder="Status" className="input input-bordered w-full max-w-xs" value={status} onChange={(e) => setStatus(Number(e.target.value))} />
                 </td>
-                <td>
+                {/*<td>
                   <input type="text" placeholder="Metadata" className="input input-bordered w-full max-w-xs" value={metadata} onChange={(e) => setMetadata(e.target.value)} />
-                </td>
+                </td>*/}
                 <td className="flex flex-row">
                   <button className="btn btn-primary" onClick={handleEncode}>Encode</button>
                   <button className="btn btn-primary" onClick={registerRecipient}>Save</button>

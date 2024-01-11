@@ -17,7 +17,10 @@ import { parseEther } from "viem";
 
 const Init: NextPage = () => {
 
-    const [createdProfileId, setCreatedProfileId] = useState(null);
+  const [startTime, setStartTime] = useState(1704943826);
+  const [roundCount, setRoundCount] = useState(4);
+  const [roundDuration, setRoundDuration] = useState(1000);
+  const [createdProfileId, setCreatedProfileId] = useState(null);
   const { data: survivorData, isLoading: survivorLoading } = useDeployedContractInfo("SurvivorStrategy");
   const { data: registryData, isLoading: nftLoading } = useDeployedContractInfo("Registry");
   const { data: nftData, isLoading: registryLoading } = useDeployedContractInfo("AllocatorNFT");
@@ -70,7 +73,7 @@ const Init: NextPage = () => {
 
   const initStrategyParam = encodeAbiParameters(
     parseAbiParameters('address a, uint256 b, uint64 c, uint64 d, uint256 e'),
-    ["0x5FC8d32690cc91D4c39d9d3abcBD16989F875707", BigInt(10), BigInt(1704918201), BigInt(10), BigInt(100)]
+    ["0x5FC8d32690cc91D4c39d9d3abcBD16989F875707", BigInt(roundCount), BigInt(startTime), BigInt(roundDuration), BigInt(100)]
   )
 
   const { writeAsync: createPool, isLoading: loadingPool } = useScaffoldContractWrite({
@@ -141,7 +144,16 @@ const Init: NextPage = () => {
               Your New Profile Id:{createdProfileId}
           </div>
           <div>
-          <button
+            <div>Round Duration
+              <input type="number" className="input input-bordered w-xs max-w-xs" value={roundDuration} onChange={(e) => setRoundDuration(Number(e.target.value))} />
+            </div>
+            <div>Uniq start time
+              <input type="number" className="input input-bordered w-xs max-w-xs" value={startTime} onChange={(e) => setStartTime(Number(e.target.value))} />
+            </div>
+            <div>Number of Players
+              <input type="number" className="input input-bordered w-xs max-w-xs" value={roundCount} onChange={(e) => setRoundCount(Number(e.target.value))} />
+            </div>
+            <button
                 className={`btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest ${
                   loadingPool ? "loading" : ""
                 }`}
