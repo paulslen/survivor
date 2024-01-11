@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   5: {
     AllocatorNFT: {
-      address: "0xD534a20EAE01a5b663ee98D8c7A9838E613691cC",
+      address: "0x57F9FD8fe953fe103890344c4A4BaF4FfCDd5338",
       abi: [
         {
           inputs: [],
@@ -189,7 +189,13 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
+          inputs: [
+            {
+              internalType: "address",
+              name: "_recipient",
+              type: "address",
+            },
+          ],
           name: "mintNFT",
           outputs: [],
           stateMutability: "nonpayable",
@@ -436,7 +442,7 @@ const deployedContracts = {
       },
     },
     SurvivorStrategy: {
-      address: "0x47C3a30E15dC0AA7e57eAe250c7c4Bb3f50f169E",
+      address: "0x1E595c0C832c1F564b737666ac76933C7dB16aFA",
       abi: [
         {
           inputs: [

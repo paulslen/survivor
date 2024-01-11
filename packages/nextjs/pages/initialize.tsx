@@ -74,13 +74,13 @@ const Init: NextPage = () => {
 
   const initStrategyParam = encodeAbiParameters(
     parseAbiParameters('address a, uint256 b, uint64 c, uint64 d, uint256 e'),
-    ["0x5FC8d32690cc91D4c39d9d3abcBD16989F875707", BigInt(roundCount), BigInt(startTime), BigInt(roundDuration), BigInt(100)]
+    ["0x1E595c0C832c1F564b737666ac76933C7dB16aFA", BigInt(roundCount), BigInt(startTime), BigInt(roundDuration), BigInt(100)]
   )
 
   const { writeAsync: createPool, isLoading: loadingPool } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "createPoolWithCustomStrategy",
-    args: [createdProfileId, survivorData?.address, initStrategyParam, '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', BigInt(prizePool), 
+    args: [createdProfileId, ["0x1E595c0C832c1F564b737666ac76933C7dB16aFA"], initStrategyParam, '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', BigInt(prizePool), 
     {
         protocol: BigInt(1),
         pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi"
