@@ -1,10 +1,5 @@
 Survivor
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
-
 ## Quickstart
 
 To get started follow the steps below:
