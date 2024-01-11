@@ -1,34 +1,28 @@
-// import Link from "next/link";
 import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import {
-  useAnimationConfig,
-  useScaffoldContract,
   useScaffoldContractRead,
-  useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
   useDeployedContractInfo,
 } from "~~/hooks/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { useAccount } from "wagmi";
 import { encodeAbiParameters, parseAbiParameters } from 'viem'
 import { parseEther } from "viem";
 
 const Home: NextPage = () => {
 
+  const [currentPoolId, setCurrentPoolId] = useState(2);
+  const [arrayOfWinners, setArrayOfWinners] = useState([]);
   const [recipientAddress, setRecipientAddress] = useState("0x0000000000000000000000000000000000000000");
   const [status, setStatus] = useState(0);
-  const [metadata, setMetadata] = useState("");
+  /// const [metadata, setMetadata] = useState(""); This will be used to include metadata when adding recipients
   const [recipientData, setRecipientData] = useState("0x0000000000000000000000000000000000000000");
   const [recIndex, setRecIndex] = useState(0);
-  const [recipientCount, setRecipientCount] = useState(0);
+  /// const [recipientCount, setRecipientCount] = useState(0); We want to stop the loop when we get to the last recipient
   const [recipients, setRecipients] = useState([]);
 
 
   const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
-  const { data: registryData } = useDeployedContractInfo("Registry");
-  const { data: nftData } = useDeployedContractInfo("AllocatorNFT");
   const { data: poolId } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getPoolId",
@@ -49,10 +43,14 @@ const Home: NextPage = () => {
     contractName: "SurvivorStrategy",
     functionName: "roundDuration",
   });
-  const { data: getActiveRecipientCount } = useScaffoldContractRead({
+  const { data: getPoolAmount } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
-    functionName: "getActiveRecipientCount",
+    functionName: "getPoolAmount",
   });
+  // const { data: getActiveRecipientCount } = useScaffoldContractRead({
+  //   contractName: "SurvivorStrategy",
+  //   functionName: "getActiveRecipientCount",
+  // });
   const { data: recipient } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipient",
@@ -65,30 +63,23 @@ const Home: NextPage = () => {
       setRecIndex((prevIndex) => prevIndex + 1);
     }
   }, [recipient]);
-  
-  const { data: getPoolAmount } = useScaffoldContractRead({
-    contractName: "SurvivorStrategy",
-    functionName: "getPoolAmount",
-  });
 
   const handleEncode = () => {
     const encodedRecipientData = encodeAbiParameters(
       parseAbiParameters('address a, address b, uint256 c'),
       [recipientAddress, recipientAddress, BigInt(status)]
-      // ['address', 'address', 'uint', ['uint', 'string']]
-      // 
     )
-    console.log(encodedRecipientData);
     setRecipientData(encodedRecipientData + "000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d54657374204d6574616461746100000000000000000000000000000000000000");
   }
-    ///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000000000000000002
-    ///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb9226600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000a74657374737472696e6700000000000000000000000000000000000000000000
-    ///0x0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d54657374204d6574616461746100000000000000000000000000000000000000
+
+///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000000000000000002
+///0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb9226600000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000a74657374737472696e6700000000000000000000000000000000000000000000
+///0x0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000921ca5c07dc02147c6178dc1fae9bd2f3eb053a0000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000d54657374204d6574616461746100000000000000000000000000000000000000
 
   const { writeAsync: registerRecipient, isLoading: loadingRegistration } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "registerRecipient",
-    args: [ BigInt(1), recipientData],
+    args: [ BigInt(currentPoolId), recipientData],
       value: parseEther("0.1"),
     blockConfirmations: 1,
     onBlockConfirmation: txnReceipt => {
@@ -96,13 +87,22 @@ const Home: NextPage = () => {
     },
   });
 
+  const { writeAsync: distribute } = useScaffoldContractWrite({
+    contractName: "Allo",
+    functionName: "distribute",
+    args: [ BigInt(currentPoolId), arrayOfWinners, "0x0"],
+    blockConfirmations: 1,
+    onBlockConfirmation: txnReceipt => {
+      console.log("Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+
+  /// Calculations to convert timers to human readable format
   let num1 = Number("" + roundStartTime);
   let num2 = Number("" + roundDuration);
   let roundExpiration = num1 + num2;
-
   // Convert BigInt to Number for the Date constructor
   let roundExpirationNumber = Number(roundExpiration);
-
   // Create a Date object and format it
   let expirationDate = new Date(roundExpirationNumber * 1000);
   let expirationDateString = expirationDate.toUTCString();
@@ -110,7 +110,6 @@ const Home: NextPage = () => {
   return (
     <>
       <MetaHeader />
-      
       <div className="flex flex-row flex-grow pt-10 mx-auto">
         {/* Project Menu List 
         <div className="px-5 w-1/4">
@@ -169,11 +168,17 @@ const Home: NextPage = () => {
             </div>
           </div>
 
-          {/* Judge List */}
+          {/* Add funds to the pool */}
+          <div className="overflow-x-auto pt-6">
+            <h1 className="font-black text-xl">Manage Pool</h1>
+            <input type="text" placeholder="Add Funds" className="input input-bordered w-full max-w-xs"/><button className="btn btn-primary">Send</button>
+            <br/><button className="btn btn-primary w-1/2 mt-8" onClick={distribute} >Distribute Current Round</button>
+          </div>
+
+          {/* Judge List
           <div className="overflow-x-auto pt-6">
             <h1 className="font-black text-xl">Allocators</h1>
             <table className="table">
-              {/* head */}
               <thead>
                 <tr>
                   <th>id</th>
@@ -197,7 +202,7 @@ const Home: NextPage = () => {
                 </tr>
               </tbody>
             </table>
-          </div>
+          </div> */}
 
           {/* Player List */}
           <div className="overflow-x-auto pt-6">

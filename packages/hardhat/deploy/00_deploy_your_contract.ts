@@ -61,15 +61,15 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
-  await deploy("Anchor", {
-    from: deployer,
-    // Contract constructor arguments
-    args: ['0xf53734bb1c0f9f1a186fac4ba6871928deabed38a7185ef6f60014385d6a94eb','0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'],
-    log: true,
-    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-    // automatically mining the contract deployment transaction. There is no effect on live networks.
-    autoMine: true,
-  });
+  // await deploy("Anchor", {
+  //   from: deployer,
+  //   // Contract constructor arguments
+  //   args: ['0xf53734bb1c0f9f1a186fac4ba6871928deabed38a7185ef6f60014385d6a94eb','0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'],
+  //   log: true,
+  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
+  //   autoMine: true,
+  // });
 
   await deploy("AllocatorNFT", {
     from: deployer,

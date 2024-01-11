@@ -60,9 +60,9 @@ contract SurvivorStrategy is BaseStrategy {
         _;
     }
 
-    /// ======================
-    /// ======= Storage ======
-    /// ======================
+    /// =======================
+    /// ======= Storage =======
+    /// =======================
 
     struct Recipient {
         address recipientAddress;

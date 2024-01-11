@@ -20,6 +20,7 @@ const Init: NextPage = () => {
   const [startTime, setStartTime] = useState(1704943826);
   const [roundCount, setRoundCount] = useState(4);
   const [roundDuration, setRoundDuration] = useState(1000);
+  const [prizePool, setPrizePool] = useState(20000);
   const [createdProfileId, setCreatedProfileId] = useState(null);
   const { data: survivorData, isLoading: survivorLoading } = useDeployedContractInfo("SurvivorStrategy");
   const { data: registryData, isLoading: nftLoading } = useDeployedContractInfo("Registry");
@@ -79,7 +80,7 @@ const Init: NextPage = () => {
   const { writeAsync: createPool, isLoading: loadingPool } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "createPoolWithCustomStrategy",
-    args: [createdProfileId, survivorData?.address, initStrategyParam, '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', BigInt(100), 
+    args: [createdProfileId, survivorData?.address, initStrategyParam, '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', BigInt(prizePool), 
     {
         protocol: BigInt(1),
         pointer: "bafybeia4khbew3r2mkflyn7nzlvfzcb3qpfeftz5ivpzfwn77ollj47gqi"
@@ -100,9 +101,11 @@ const Init: NextPage = () => {
       
 
         {/* Project Data */}
-        <div className="flex flex-col p-20 w-full">
+        <div className="flex flex-col flex-grow pl-32 pt-10">
           {/* Header */}
-            <div className="p-6 flex flex-row">
+            <div className="p-6 flex flex-col">
+              <h1 className="font-black text-xl">Initialize Global Contracts</h1>
+              <div className="flex flex-row">
                 <button
                     className={`btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest ${
                     alloLoading ? "loading" : ""
@@ -126,10 +129,12 @@ const Init: NextPage = () => {
                     Initialize Registry
                   </>
                 )}
-              </button>
-              </div>
-          <div>
-            <button
+              </button></div>
+            </div>
+            <div className="p-6 flex flex-col">
+              <h1 className="font-black text-xl">Create a Profile</h1>
+              <div classname="flex flex-row">
+              <button
                 className={`btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest ${
                   loadingProfile ? "loading" : ""
                 }`}
@@ -141,18 +146,20 @@ const Init: NextPage = () => {
                   </>
                 )}
               </button>
-              Your New Profile Id:{createdProfileId}
-          </div>
+              <span>Your New Profile Id:{createdProfileId}</span>
+              </div>
+            </div>
           <div>
-            <div>Round Duration
+          <div className="p-6 flex flex-col">
+              <h1 className="font-black text-xl">Initialize Strategy</h1>
+              Round Duration
               <input type="number" className="input input-bordered w-xs max-w-xs" value={roundDuration} onChange={(e) => setRoundDuration(Number(e.target.value))} />
-            </div>
-            <div>Uniq start time
+              Uniq start time
               <input type="number" className="input input-bordered w-xs max-w-xs" value={startTime} onChange={(e) => setStartTime(Number(e.target.value))} />
-            </div>
-            <div>Number of Players
+              Number of Players
               <input type="number" className="input input-bordered w-xs max-w-xs" value={roundCount} onChange={(e) => setRoundCount(Number(e.target.value))} />
-            </div>
+              Prize Pool
+              <input type="number" className="input input-bordered w-xs max-w-xs" value={prizePool} onChange={(e) => setPrizePool(Number(e.target.value))} />
             <button
                 className={`btn btn-primary rounded-full capitalize font-normal font-white w-24 flex items-center gap-1 hover:gap-2 transition-all tracking-widest ${
                   loadingPool ? "loading" : ""
@@ -161,10 +168,11 @@ const Init: NextPage = () => {
               >
                 {!loadingPool && (
                   <>
-                    Create Pool
+                    Init Strategy!
                   </>
                 )}
               </button>
+              </div>
           </div>
       </div>
     </>

@@ -1,14 +1,9 @@
-//import Link from "next/link";
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { parseEther } from "viem";
 import {
-  useAnimationConfig,
-  useScaffoldContract,
   useScaffoldContractRead,
-  useScaffoldEventHistory,
-  useScaffoldEventSubscriber,
   useDeployedContractInfo,
 } from "~~/hooks/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
@@ -16,13 +11,13 @@ import { encodeAbiParameters, parseAbiParameters } from 'viem'
 
 const Home: NextPage = () => {
 
+  const [currentPoolId, setCurrentPoolId] = useState(2);
   const { data: survivorData } = useDeployedContractInfo("SurvivorStrategy");
-  const { data: registryData } = useDeployedContractInfo("Registry");
   const [recIndex, setRecIndex] = useState(0);
   const [recipientCount, setRecipientCount] = useState(0);
   const [recipients, setRecipients] = useState([]);
   const [nftId, setNftId] = useState(0);
-  const [currentPoolId, setCurrentPoolId] = useState(2);
+  
 
   const { data: poolId } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
@@ -48,6 +43,10 @@ const Home: NextPage = () => {
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipientCount",
   });
+  const { data: getPoolAmount } = useScaffoldContractRead({
+    contractName: "SurvivorStrategy",
+    functionName: "getPoolAmount",
+  });
   const { data: recipient } = useScaffoldContractRead({
     contractName: "SurvivorStrategy",
     functionName: "getActiveRecipient",
@@ -61,19 +60,12 @@ const Home: NextPage = () => {
     }
   }, [recipient]);
 
-
-  const { data: getPoolAmount } = useScaffoldContractRead({
-    contractName: "SurvivorStrategy",
-    functionName: "getPoolAmount",
-  });
-
+  /// Calculations for round info
   let num1 = Number("" + roundStartTime);
   let num2 = Number("" + roundDuration);
   let roundExpiration = num1 + num2;
-
   // Convert BigInt to Number for the Date constructor
   let roundExpirationNumber = Number(roundExpiration);
-
   // Create a Date object and format it
   let expirationDate = new Date(roundExpirationNumber * 1000);
   let expirationDateString = expirationDate.toUTCString();
@@ -83,7 +75,6 @@ const Home: NextPage = () => {
     parseAbiParameters('address a, uint256 b'),
     [recipientAddress, BigInt(nftId)]
   )
-  console.log(encodedData);
 
   const { writeAsync: allocate, isLoading: loadingAllocate } = useScaffoldContractWrite({
     contractName: "Allo",
@@ -179,7 +170,6 @@ const Home: NextPage = () => {
                   <th>Metadata</th>
                   <th>Address</th>
                   <th>Status</th>
-                  <th>Enter your NFT ID</th>
                 </tr>
               </thead>
               <tbody>
@@ -194,7 +184,8 @@ const Home: NextPage = () => {
                 ))}
               </tbody>
             </table>
-            <div className="flex flex-col">
+            <h1 className="font-black text-xl">Vote!</h1>
+            <div className="flex flex-row">
               <div>Address
                 <input type="text" placeholder="Recipient Address" className="input input-bordered w-lg" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
               </div>
