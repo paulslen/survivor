@@ -8,29 +8,6 @@ import { encodeAbiParameters } from 'viem'
 
 const Home: NextPage = () => {
 
-  // Initialize data for the SurvivorStrategy initialize function
-  // const initializeData = {
-  //     nft: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-  //     maxRecipientsAllowed: 10,
-  //     roundStartTime: Math.floor(Date.now() / 1000),
-  //     roundDuration: 1704740052,
-  //     roundReward: 1000000000000000000,
-  // };
-
-  const encodedData = encodeAbiParameters(
-    [
-      { name: 'x', type: 'string' },
-      { name: 'y', type: 'uint' },
-      { name: 'z', type: 'bool' }
-    ],
-    ['wagmi', 420n, true]
-  )
-  // const data = abiCoder.encode(
-  //     ['address', 'uint256', 'uint64', 'uint64', 'uint256'],
-  //     Object.values(initializeData)
-  // );
-  console.log(encodedData);
-
   return (
     <>
       <MetaHeader />

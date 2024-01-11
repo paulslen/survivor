@@ -88,7 +88,7 @@ const Home: NextPage = () => {
   const { writeAsync: registerRecipient, isLoading: loadingRegistration } = useScaffoldContractWrite({
     contractName: "Allo",
     functionName: "registerRecipient",
-    args: [ BigInt(poolId?.toString()), recipientData],
+    args: [ BigInt(1), recipientData],
       value: parseEther("0.1"),
     blockConfirmations: 1,
     onBlockConfirmation: txnReceipt => {
